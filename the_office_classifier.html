@@ -31,7 +31,6 @@
             margin-top: 30px;
             display: block;
             margin: 0 auto;
-            /* text-align: center; */
         }
 
         h3 {
@@ -50,103 +49,91 @@
 
     <script>
         async function generateBars(inputText) {
-            // const imageUrls = [
-            //     'images/michael.jpeg',
-            //     'images/dwight.jpeg',
-            //     'images/pam.jpeg',
-            //     'images/jim.jpeg',
-            //     'images/kelly.jpeg',
-            //     'images/phyllis.jpeg',
-            //     'images/andy.jpeg',
-            //     'images/darryl.jpeg',
-            //     'images/oscar.jpeg',
-            //     'images/angela.jpeg',
-            //     'images/ryan.jpeg',
-            //     'images/erin.jpeg',
-            //     'images/kevin.jpeg',
-            //     'images/stanley.jpeg',
-            //     'images/creed.jpeg',
-            //     'images/toby.jpeg',
-            //     'images/meredith.jpeg',
-            //     'images/cropped_david_wallace.jpg',
-            //     'images/cropped_robert_california.jpeg',
-            //     'images/cropped_jan.png',
-            //     'images/karen.jpeg',
-            // ];
-            // const barHeights = [];
+            const imageUrls = [
+                'images/michael.jpeg',
+                'images/dwight.jpeg',
+                'images/pam.jpeg',
+                'images/jim.jpeg',
+                'images/kelly.jpeg',
+                'images/phyllis.jpeg',
+                'images/andy.jpeg',
+                'images/darryl.jpeg',
+                'images/oscar.jpeg',
+                'images/angela.jpeg',
+                'images/ryan.jpeg',
+                'images/erin.jpeg',
+                'images/kevin.jpeg',
+                'images/stanley.jpeg',
+                'images/creed.jpeg',
+                'images/toby.jpeg',
+                'images/meredith.jpeg',
+                'images/cropped_david_wallace.jpg',
+                'images/cropped_robert_california.jpeg',
+                'images/cropped_jan.png',
+                'images/karen.jpeg',
+            ];
+            const barHeights = [];
 
-            // const url = 'https://run.cerebrium.ai/p-9670b5a0/office-test/predict';
 
-            // const data = { "text": "sample text" };
-
-            // const response = await fetch(url, {
-            //     method: 'POST',
-            //     mode: "no-cors",
-            //     headers: {
-            //         'Authorization': 'c_api_key-760d1b8f5f4d8402333b',
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: data,
-            // });
-
-            // const text = await response.text();
-
-            // console.log(text);
             const fetchData = async () => {
                 const url = 'https://run.cerebrium.ai/p-9670b5a0/office-test/predict';
+                const data = JSON.stringify({ "text": inputText })
+                const response = await fetch(url, { method: 'POST', headers: { 'Authorization': 'Bearer c_api_key-760d1b8f5f4d8402333b', 'Content-Type': 'application/json', }, body: data, });
+                const text = await response.text();
+                if (inputText.trim() === '') { // check if input text is empty or only contains whitespace
+                    for (let i = 0; i < 21; i++) {
+                        barHeights.push(0);
+                    }
+                } else {
+                    var preds = JSON.parse(text)['output']
+                    barHeights.push(Math.round(preds[13] * 100))
+                    barHeights.push(Math.round(preds[5] * 100))
+                    barHeights.push(Math.round(preds[15] * 100))
+                    barHeights.push(Math.round(preds[8] * 100))
+                    barHeights.push(Math.round(preds[10] * 100))
+                    barHeights.push(Math.round(preds[16] * 100))
+                    barHeights.push(Math.round(preds[0] * 100))
+                    barHeights.push(Math.round(preds[3] * 100))
+                    barHeights.push(Math.round(preds[14] * 100))
+                    barHeights.push(Math.round(preds[1] * 100))
+                    barHeights.push(Math.round(preds[18] * 100))
+                    barHeights.push(Math.round(preds[6] * 100))
+                    barHeights.push(Math.round(preds[11] * 100))
+                    barHeights.push(Math.round(preds[19] * 100))
+                    barHeights.push(Math.round(preds[2] * 100))
+                    barHeights.push(Math.round(preds[20] * 100))
+                    barHeights.push(Math.round(preds[12] * 100))
+                    barHeights.push(Math.round(preds[4] * 100))
+                    barHeights.push(Math.round(preds[17] * 100))
+                    barHeights.push(Math.round(preds[7] * 100))
+                    barHeights.push(Math.round(preds[9] * 100))
+                }
+                const chartContainer = document.getElementById('chart-container');
+                chartContainer.innerHTML = '';
 
-                const data = { "text": "sample text" };
-                try {
-                    const response = await fetch(url, { method: 'POST', mode: "no-cors", headers: { 'Authorization': 'c_api_key-760d1b8f5f4d8402333b', 'Content-Type': 'application/json', }, body: data, });
-                    const text = await response.text();
-                    console.log(text);
-                } catch (error) {
-                    console.error('Error:', error);
+                for (let i = 0; i < barHeights.length; i++) {
+                    const bar = document.createElement('div');
+                    bar.classList.add('bar');
+                    bar.style.left = (i * 80) + 'px';
+                    bar.style.height = barHeights[i] * 3 + 'px';
+
+                    const percentage = document.createElement('p');
+                    percentage.innerText = barHeights[i] + '%';
+                    percentage.style.position = 'absolute';
+                    percentage.style.bottom = barHeights[i] * 3 + 10 + 'px';
+                    percentage.style.left = '50%';
+                    percentage.style.transform = 'translateX(-50%)';
+
+                    const img = document.createElement('img');
+                    img.src = imageUrls[i];
+                    img.alt = 'Image ' + (i + 1);
+
+                    bar.appendChild(percentage);
+                    bar.appendChild(img);
+                    chartContainer.appendChild(bar);
                 }
             };
             fetchData();
-
-
-
-            // if (inputText.trim() === '') { // check if input text is empty or only contains whitespace
-            //     for (let i = 0; i < 21; i++) {
-            //         barHeights.push(0);
-            //     }
-            // } else {
-            //     // generate random bar values
-            //     let sum = 0;
-            //     for (let i = 0; i < 20; i++) {
-            //         const percentage = Math.floor(Math.random() * (101 - sum));
-            //         barHeights.push(percentage);
-            //         sum += percentage;
-            //     }
-            //     barHeights.push(100 - sum);
-            // }
-
-            // const chartContainer = document.getElementById('chart-container');
-            // chartContainer.innerHTML = '';
-
-            // for (let i = 0; i < barHeights.length; i++) {
-            //     const bar = document.createElement('div');
-            //     bar.classList.add('bar');
-            //     bar.style.left = (i * 80) + 'px';
-            //     bar.style.height = barHeights[i] * 3 + 'px';
-
-            //     const percentage = document.createElement('p');
-            //     percentage.innerText = barHeights[i] + '%';
-            //     percentage.style.position = 'absolute';
-            //     percentage.style.bottom = barHeights[i] * 3 + 10 + 'px';
-            //     percentage.style.left = '50%';
-            //     percentage.style.transform = 'translateX(-50%)';
-
-            //     const img = document.createElement('img');
-            //     img.src = imageUrls[i];
-            //     img.alt = 'Image ' + (i + 1);
-
-            //     bar.appendChild(percentage);
-            //     bar.appendChild(img);
-            //     chartContainer.appendChild(bar);
-            // }
         }
 
     </script>
